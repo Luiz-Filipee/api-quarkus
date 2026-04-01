@@ -42,6 +42,52 @@ public class AgendamentoController {
         return Response.status(Response.Status.CREATED).entity(agendamento).build();
     }
 
+    
+    @PUT
+    @Path("{id}")
+    @Transactional
+    public Response update(@PathParam("id") Long id, AgendamentoEntity agendamentoUpdate) {
+        AgendamentoEntity entity = AgendamentoEntity.findById(id);
+        
+        if (entity == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .entity("Agendamento não encontrado")
+                .build();
+        }
+
+        if (agendamentoUpdate.usuario != null) {
+            UserEntity user = UserEntity.find("id", agendamentoUpdate.usuario.id).firstResult();
+            if (user == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Usuario nao encontrado!")
+                    .build();
+            }
+            entity.usuario = user;
+        }
+
+        if (agendamentoUpdate.horario != null) {
+            HorarioEntity horario = HorarioEntity.find("id", agendamentoUpdate.horario.id).firstResult();
+            if (horario == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Horario nao encontrado!")
+                    .build();
+            }
+            entity.horario = horario;
+        }
+
+        if (agendamentoUpdate.servico != null) {
+            ServicoEntity servico = ServicoEntity.find("id", agendamentoUpdate.servico).firstResult();
+            if (servico == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Servico nao encontrado!")
+                    .build();
+            }
+            entity.servico = servico;
+        }
+
+        return Response.ok(entity).build();
+    }
+
     @DELETE
     @Path("{id}")
     @Transactional
