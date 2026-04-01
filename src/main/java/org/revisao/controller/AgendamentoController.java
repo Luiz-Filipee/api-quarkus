@@ -1,10 +1,7 @@
 package org.revisao.controller;
 
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.revisao.model.AgendamentoEntity;
@@ -43,5 +40,20 @@ public class AgendamentoController {
 
         agendamento.persist();
         return Response.status(Response.Status.CREATED).entity(agendamento).build();
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Transactional
+    public Response delete(@PathParam("îd") Long id) {
+        AgendamentoEntity entity = AgendamentoEntity.findById(id);
+
+        if (entity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        boolean isDeletado = AgendamentoEntity.deleteById(entity);
+
+        return Response.ok(isDeletado).build();
     }
 }
