@@ -28,7 +28,7 @@ public class AgendamentoEntity extends PanacheEntityBase {
 
         public AgendamentoEntity() {}
 
-        public AgendamentoEntity(UserEntity usuario, HorarioEntity horario, String servico) {
+        public AgendamentoEntity(UserEntity usuario, HorarioEntity horario, ServicoEntity servico) {
             this.usuario = usuario;
             this.horario = horario;
             this.servico = servico;
