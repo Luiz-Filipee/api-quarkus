@@ -15,43 +15,37 @@ import java.util.List;
 @Authenticated
 public class UserController {
 
+    @Inject
+    UserService userService;
+
     @GET
     public List<UserEntity> findAllUsers() {
-        return UserEntity.listAll();
+        return userService.findAll();
     }
 
     @GET
     @Path("email/{email}")
     public Response findByEmail(@PathParam("email") String email) {
-        return UserEntity.findByEmail(email)
+        return userService.findByEmail(email)
                 .map(user -> Response.ok(user).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
     @POST
-    @Transactional
     public Response createUser(UserEntity user) {
-        user.persist();
+        user = userService.create(user);
         return Response.status(Response.Status.CREATED).entity(user).build();
     }
 
     @PUT
     @Path("{id}")
-    @Transactional
     public Response updateUser(@PathParam("id") Long id, UserEntity userUpdate) {
-        UserEntity entity = UserEntity.findById(id);
+        UserEntity entity = userService.update(id, userUpdate);
 
         if (entity == null) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Usuário não encontrado")
-                    .build();
-        }
-
-        if (userUpdate.email != null) {
-            entity.email = userUpdate.email;
-        }
-        if (userUpdate.username != null) {
-            entity.username = userUpdate.username;
+                .entity("Usuário não encontrado")
+                .build();
         }
 
         return Response.ok(entity).build();
@@ -59,17 +53,14 @@ public class UserController {
 
     @DELETE
     @Path("{id}")
-    @Transactional
-    public Response deleteUser(@PathParam("îd") Long id) {
-        UserEntity entity = UserEntity.findById(id);
+    public Response deleteUser(@PathParam("id") Long id) {
+        boolean isDeleted = userService.delete(id);
 
-        if (entity == null) {
+        if (!isDeleted) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        boolean isDeletado = UserEntity.deleteById(entity);
-
-        return Response.ok(isDeletado).build();
+        return Response.ok(isDeleted).build();
     }
 }
 
