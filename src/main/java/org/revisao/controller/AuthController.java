@@ -22,11 +22,17 @@ import java.util.HashSet;
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthController {
 
+    @Inject
+    UserService userService;
+
+    @Inject
+    JwtService jwtService;
+
     @POST
     @Path("/login")
     @Transactional
     public Response login(UserAuthRequest userAuthRequest) {
-        UserEntity user = UserEntity.find("email", userAuthRequest.email()).firstResult();
+        UserEntity user = userService.findByEmail(userAuthRequest.email());
 
         if (user == null || !BcryptUtil.matches(userAuthRequest.password(), user.password)) {
             return Response.status(Response.Status.UNAUTHORIZED)
@@ -34,15 +40,9 @@ public class AuthController {
                     .build();
         }
 
-        // Geração do Token JWT
-        String token = Jwt.issuer("https://meu-barber-api.com")
-                .upn(user.email) // Nome do usuário (Subject)
-                .groups(new HashSet<>(Arrays.asList("USER"))) // Roles/Perfil
-                .claim("userId", user.id) // Dados extras (payload)
-                .expiresIn(Duration.ofHours(8))
-                .sign(); // Assina o token
+        String token = jwtService.generateToken(user);
 
-        return Response.ok(token).build();
+        return Response.ok(new LoginResponse(token)).build();
     }
 
     @POST
