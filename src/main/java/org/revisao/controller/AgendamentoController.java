@@ -42,6 +42,7 @@ public class AgendamentoController {
         return Response.status(Response.Status.CREATED).entity(agendamento).build();
     }
 
+    
     @PUT
     @Path("{id}")
     @Transactional
