@@ -1,12 +1,10 @@
 package org.revisao.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.enterprise.inject.Default;
 import jakarta.persistence.*;
 import org.revisao.dto.CreateUserRequest;
 import org.revisao.enums.Role;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
